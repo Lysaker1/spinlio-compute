@@ -23,7 +23,7 @@ namespace SpinlioCompute.Utils
         private readonly IConfiguration _configuration;
         
         /// <summary>Name of the S3 bucket where models are stored</summary>
-        private readonly string _bucketName;
+        private readonly string _bucketName = string.Empty;
 
         /**
          * 🔧 Initializes a new instance of the S3Utility

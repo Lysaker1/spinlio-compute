@@ -229,7 +229,7 @@ namespace Rhino.Compute
          * @param value - Geometry object to serialize
          * @param serializer - JSON serializer
          */
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var geometryBase = value as GeometryBase;
             if (geometryBase == null)

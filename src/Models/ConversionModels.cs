@@ -13,16 +13,16 @@ namespace SpinlioCompute.Models
     public class ConversionRequest
     {
         /// <summary>Unique identifier for the model in the client system</summary>
-        public string ModelId { get; set; }
+        public string ModelId { get; set; } = string.Empty;
         
         /// <summary>S3 key where the source model is stored</summary>
-        public string S3Key { get; set; }
+        public string S3Key { get; set; } = string.Empty;
         
         /// <summary>File format of the source model (e.g., "obj", "stl")</summary>
-        public string SourceFormat { get; set; }
+        public string SourceFormat { get; set; } = string.Empty;
         
         /// <summary>Array of target formats to convert to (e.g., ["glb", "gltf"])</summary>
-        public string[] TargetFormats { get; set; }
+        public string[] TargetFormats { get; set; } = Array.Empty<string>();
     }
 
     /**
@@ -37,28 +37,28 @@ namespace SpinlioCompute.Models
         /// <summary>Unique identifier for this conversion job</summary>
         public string Id { get; set; } = string.Empty;
         
-        /// <summary>Client-provided model identifier (from the request)</summary>
+        /// <summary>Identifier of the model being converted</summary>
         public string ModelId { get; set; } = string.Empty;
         
         /// <summary>S3 key of the source model</summary>
         public string S3Key { get; set; } = string.Empty;
         
-        /// <summary>Format of the source model file</summary>
+        /// <summary>Format of the source file</summary>
         public string SourceFormat { get; set; } = string.Empty;
         
-        /// <summary>Requested output formats</summary>
+        /// <summary>Array of formats to convert to</summary>
         public string[] TargetFormats { get; set; } = Array.Empty<string>();
         
-        /// <summary>Current status: "pending", "processing", "completed", or "failed"</summary>
+        /// <summary>Current status of the job (processing, completed, failed)</summary>
         public string Status { get; set; } = string.Empty;
         
-        /// <summary>When the job was initiated</summary>
+        /// <summary>When the job was started</summary>
         public DateTime StartTime { get; set; }
         
-        /// <summary>When the job finished (or null if still in progress)</summary>
+        /// <summary>When the job was completed (if done)</summary>
         public DateTime? EndTime { get; set; }
         
-        /// <summary>Array of successfully converted outputs</summary>
+        /// <summary>Array of output files produced by the conversion</summary>
         public ConversionOutput[] Outputs { get; set; } = Array.Empty<ConversionOutput>();
         
         /// <summary>Error message if the job failed</summary>
@@ -74,13 +74,13 @@ namespace SpinlioCompute.Models
     public class ConversionJobStatus
     {
         /// <summary>Current status: "pending", "processing", "completed", or "failed"</summary>
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         
         /// <summary>Array of successfully converted outputs (only present when status is "completed")</summary>
-        public ConversionOutput[] Outputs { get; set; }
+        public ConversionOutput[] Outputs { get; set; } = Array.Empty<ConversionOutput>();
         
         /// <summary>Error message if the job failed</summary>
-        public string Error { get; set; }
+        public string? Error { get; set; }
     }
 
     /**
@@ -92,12 +92,12 @@ namespace SpinlioCompute.Models
     public class ConversionOutput
     {
         /// <summary>Format of this output file (e.g., "glb")</summary>
-        public string Format { get; set; }
+        public string Format { get; set; } = string.Empty;
         
         /// <summary>Pre-signed URL to access this file (temporary)</summary>
-        public string Url { get; set; }
+        public string Url { get; set; } = string.Empty;
         
         /// <summary>S3 key where this output is stored</summary>
-        public string S3Key { get; set; }
+        public string S3Key { get; set; } = string.Empty;
     }
 } 

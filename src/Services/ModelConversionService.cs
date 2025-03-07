@@ -230,21 +230,18 @@ namespace SpinlioCompute.Services
                 switch (sourceFormat)
                 {
                     case "obj":
-                        // Create base read options first
-                        var baseObjReadOptions = new FileReadOptions();
-                        var objReadOptions = new FileObjReadOptions(baseObjReadOptions);
+                        // In Rhino 8, the Read method has different parameters
+                        var fileReadOptions = new FileReadOptions();
+                        var objReadOptions = new FileObjReadOptions(fileReadOptions);
                         
-                        // The API has changed in Rhino 8, we need to use File3dm as the doc parameter
-                        sourceLoaded = FileObj.Read(inputPath, model, objReadOptions);
+                        // Correct API for Rhino 8: FileObj.Read(string path, FileObjReadOptions options, out File3dm model);
+                        sourceLoaded = FileObj.Read(inputPath, objReadOptions, out model);
                         break;
                         
                     case "stl":
-                        // Create base read options first
-                        var baseStlReadOptions = new FileReadOptions();
-                        var stlReadOptions = new FileStlReadOptions(baseStlReadOptions);
-                        
-                        // The API has changed in Rhino 8, we need to use File3dm as the doc parameter
-                        sourceLoaded = FileStl.Read(inputPath, model, stlReadOptions);
+                        // For STL files in Rhino 8
+                        // Create a default read options - in Rhino 8 we can use the parameterless Read method
+                        sourceLoaded = FileStl.Read(inputPath, out model);
                         break;
                         
                     case "3dm":
@@ -270,20 +267,17 @@ namespace SpinlioCompute.Services
                 switch (targetFormat)
                 {
                     case "obj":
-                        // Create base write options first
-                        var baseObjWriteOptions = new FileWriteOptions();
-                        var objWriteOptions = new FileObjWriteOptions(baseObjWriteOptions);
+                        // In Rhino 8, the Write method has different parameters
+                        var fileWriteOptions = new FileWriteOptions();
+                        var objWriteOptions = new FileObjWriteOptions(fileWriteOptions);
                         
-                        // The API has changed in Rhino 8, we need to use model as the doc parameter
+                        // Correct API for Rhino 8
                         conversionSuccess = FileObj.Write(outputPath, model, objWriteOptions);
                         break;
                         
                     case "stl":
-                        var baseStlWriteOptions = new FileWriteOptions();
-                        var stlWriteOptions = new FileStlWriteOptions(baseStlWriteOptions);
-                        
-                        // The API has changed in Rhino 8, we need to use model as the doc parameter
-                        conversionSuccess = FileStl.Write(outputPath, model, stlWriteOptions);
+                        // For STL files in Rhino 8
+                        conversionSuccess = FileStl.Write(outputPath, model, new FileStlWriteOptions());
                         break;
                         
                     case "3dm":
