@@ -229,7 +229,7 @@ namespace Rhino.Compute
          * @param value - Geometry object to serialize
          * @param serializer - JSON serializer
          */
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             var geometryBase = value as GeometryBase;
             if (geometryBase == null)
@@ -238,7 +238,10 @@ namespace Rhino.Compute
                 return;
             }
 
-            var data = geometryBase.ToJSON();
+            // Create serialization options for Rhino 8
+            var options = new Rhino.FileIO.SerializationOptions();
+            var data = geometryBase.ToJSON(options);
+            
             var archive = new
             {
                 data = data

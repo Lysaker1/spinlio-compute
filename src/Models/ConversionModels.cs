@@ -35,22 +35,22 @@ namespace SpinlioCompute.Models
     public class ConversionJob
     {
         /// <summary>Unique identifier for this conversion job</summary>
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         
         /// <summary>Client-provided model identifier (from the request)</summary>
-        public string ModelId { get; set; }
+        public string ModelId { get; set; } = string.Empty;
         
         /// <summary>S3 key of the source model</summary>
-        public string S3Key { get; set; }
+        public string S3Key { get; set; } = string.Empty;
         
         /// <summary>Format of the source model file</summary>
-        public string SourceFormat { get; set; }
+        public string SourceFormat { get; set; } = string.Empty;
         
         /// <summary>Requested output formats</summary>
-        public string[] TargetFormats { get; set; }
+        public string[] TargetFormats { get; set; } = Array.Empty<string>();
         
         /// <summary>Current status: "pending", "processing", "completed", or "failed"</summary>
-        public string Status { get; set; }
+        public string Status { get; set; } = string.Empty;
         
         /// <summary>When the job was initiated</summary>
         public DateTime StartTime { get; set; }
@@ -59,10 +59,10 @@ namespace SpinlioCompute.Models
         public DateTime? EndTime { get; set; }
         
         /// <summary>Array of successfully converted outputs</summary>
-        public ConversionOutput[] Outputs { get; set; }
+        public ConversionOutput[] Outputs { get; set; } = Array.Empty<ConversionOutput>();
         
         /// <summary>Error message if the job failed</summary>
-        public string Error { get; set; }
+        public string? Error { get; set; }
     }
 
     /**

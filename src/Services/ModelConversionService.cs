@@ -216,7 +216,6 @@ namespace SpinlioCompute.Services
         private async Task<bool> ConvertFile(string inputPath, string outputPath, string sourceFormat, string targetFormat)
         {
             // This method handles the actual conversion logic using Rhino libraries
-            // The implementation depends on the supported formats and conversion methods
             
             try
             {
@@ -231,13 +230,21 @@ namespace SpinlioCompute.Services
                 switch (sourceFormat)
                 {
                     case "obj":
-                        var objReadOptions = new FileObjReadOptions();
-                        sourceLoaded = FileObj.Read(inputPath, objReadOptions, model);
+                        // Create base read options first
+                        var baseObjReadOptions = new FileReadOptions();
+                        var objReadOptions = new FileObjReadOptions(baseObjReadOptions);
+                        
+                        // The API has changed in Rhino 8, we need to use File3dm as the doc parameter
+                        sourceLoaded = FileObj.Read(inputPath, model, objReadOptions);
                         break;
                         
                     case "stl":
-                        var stlReadOptions = new FileStlReadOptions();
-                        sourceLoaded = FileStl.Read(inputPath, stlReadOptions, model);
+                        // Create base read options first
+                        var baseStlReadOptions = new FileReadOptions();
+                        var stlReadOptions = new FileStlReadOptions(baseStlReadOptions);
+                        
+                        // The API has changed in Rhino 8, we need to use File3dm as the doc parameter
+                        sourceLoaded = FileStl.Read(inputPath, model, stlReadOptions);
                         break;
                         
                     case "3dm":
@@ -263,12 +270,19 @@ namespace SpinlioCompute.Services
                 switch (targetFormat)
                 {
                     case "obj":
-                        var objWriteOptions = new FileObjWriteOptions();
+                        // Create base write options first
+                        var baseObjWriteOptions = new FileWriteOptions();
+                        var objWriteOptions = new FileObjWriteOptions(baseObjWriteOptions);
+                        
+                        // The API has changed in Rhino 8, we need to use model as the doc parameter
                         conversionSuccess = FileObj.Write(outputPath, model, objWriteOptions);
                         break;
                         
                     case "stl":
-                        var stlWriteOptions = new FileStlWriteOptions();
+                        var baseStlWriteOptions = new FileWriteOptions();
+                        var stlWriteOptions = new FileStlWriteOptions(baseStlWriteOptions);
+                        
+                        // The API has changed in Rhino 8, we need to use model as the doc parameter
                         conversionSuccess = FileStl.Write(outputPath, model, stlWriteOptions);
                         break;
                         
