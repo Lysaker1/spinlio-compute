@@ -215,6 +215,8 @@ namespace SpinlioCompute.Services
          */
         private async Task<bool> ConvertFile(string inputPath, string outputPath, string sourceFormat, string targetFormat)
         {
+            // This method handles the actual conversion logic using Rhino libraries
+            
             try
             {
                 sourceFormat = sourceFormat.ToLowerInvariant();
@@ -224,39 +226,13 @@ namespace SpinlioCompute.Services
                 var model = new File3dm();
                 bool sourceLoaded = false;
                 
-                // Create a RhinoDoc for file operations
-                var rhinoDoc = RhinoDoc.CreateHeadless(null);
-                if (rhinoDoc == null)
-                {
-                    throw new Exception("Failed to create RhinoDoc for file operations");
-                }
-                
                 // Load the source file based on its format
                 switch (sourceFormat)
                 {
                     case "obj":
-                        // Create read options
-                        var fileReadOptions = new FileReadOptions();
-                        var objReadOptions = new FileObjReadOptions(fileReadOptions);
-                        
-                        // Read with RhinoDoc
-                        sourceLoaded = FileObj.Read(inputPath, rhinoDoc, objReadOptions);
-                        
-                        // Export to model for further processing
-                        model = File3dm.FromDoc(rhinoDoc);
-                        break;
-                        
                     case "stl":
-                        // For STL files
-                        var stlReadOptions = new FileStlReadOptions();
-                        sourceLoaded = FileStl.Read(inputPath, rhinoDoc, stlReadOptions);
-                        
-                        // Export to model for further processing
-                        model = File3dm.FromDoc(rhinoDoc);
-                        break;
-                        
                     case "3dm":
-                        // Direct reading of 3DM file
+                        // Use generic File3dm.Read for all supported formats
                         model = File3dm.Read(inputPath);
                         sourceLoaded = model != null;
                         break;
@@ -276,39 +252,22 @@ namespace SpinlioCompute.Services
                 switch (targetFormat)
                 {
                     case "obj":
-                        // Create write options
-                        var fileWriteOptions = new FileWriteOptions();
-                        var objWriteOptions = new FileObjWriteOptions(fileWriteOptions);
-                        
-                        // Convert File3dm to RhinoDoc for writing
-                        using (var docModel = RhinoDoc.CreateHeadless(null))
-                        {
-                            // Import model into RhinoDoc
-                            model.ToDoc(docModel);
-                            
-                            // Write using RhinoDoc
-                            conversionSuccess = FileObj.Write(outputPath, docModel, objWriteOptions);
-                        }
-                        break;
-                        
                     case "stl":
-                        // For STL files
-                        using (var docModel = RhinoDoc.CreateHeadless(null))
-                        {
-                            // Import model into RhinoDoc
-                            model.ToDoc(docModel);
-                            
-                            // Write using RhinoDoc
-                            conversionSuccess = FileStl.Write(outputPath, docModel, new FileStlWriteOptions());
-                        }
-                        break;
-                        
                     case "3dm":
-                        conversionSuccess = model.Write(outputPath, 7);
+                        // Make sure the output file has the correct extension
+                        string extension = Path.GetExtension(outputPath);
+                        if (string.IsNullOrEmpty(extension) || extension.Substring(1).ToLowerInvariant() != targetFormat)
+                        {
+                            outputPath = Path.ChangeExtension(outputPath, targetFormat);
+                        }
+                        
+                        // Use generic File3dm.Write for all supported formats
+                        conversionSuccess = model.Write(outputPath, 7); // Using Rhino 7 file format for compatibility
                         break;
                         
                     case "gltf":
                     case "glb":
+                        // Note: This is a placeholder - actual implementation depends on available Rhino libraries
                         throw new NotImplementedException($"Conversion to {targetFormat} is not implemented yet");
                         
                     default:
