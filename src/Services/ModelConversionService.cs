@@ -215,8 +215,6 @@ namespace SpinlioCompute.Services
          */
         private async Task<bool> ConvertFile(string inputPath, string outputPath, string sourceFormat, string targetFormat)
         {
-            // This method handles the actual conversion logic using Rhino libraries
-            
             try
             {
                 sourceFormat = sourceFormat.ToLowerInvariant();
@@ -226,22 +224,35 @@ namespace SpinlioCompute.Services
                 var model = new File3dm();
                 bool sourceLoaded = false;
                 
+                // Create a RhinoDoc for file operations
+                var rhinoDoc = RhinoDoc.CreateHeadless(null);
+                if (rhinoDoc == null)
+                {
+                    throw new Exception("Failed to create RhinoDoc for file operations");
+                }
+                
                 // Load the source file based on its format
                 switch (sourceFormat)
                 {
                     case "obj":
-                        // In Rhino 8, the Read method has different parameters
+                        // Create read options
                         var fileReadOptions = new FileReadOptions();
                         var objReadOptions = new FileObjReadOptions(fileReadOptions);
                         
-                        // Correct API for Rhino 8: FileObj.Read(string path, FileObjReadOptions options, out File3dm model);
-                        sourceLoaded = FileObj.Read(inputPath, objReadOptions, out model);
+                        // Read with RhinoDoc
+                        sourceLoaded = FileObj.Read(inputPath, rhinoDoc, objReadOptions);
+                        
+                        // Export to model for further processing
+                        model = File3dm.FromDoc(rhinoDoc);
                         break;
                         
                     case "stl":
-                        // For STL files in Rhino 8
-                        // Create a default read options - in Rhino 8 we can use the parameterless Read method
-                        sourceLoaded = FileStl.Read(inputPath, out model);
+                        // For STL files
+                        var stlReadOptions = new FileStlReadOptions();
+                        sourceLoaded = FileStl.Read(inputPath, rhinoDoc, stlReadOptions);
+                        
+                        // Export to model for further processing
+                        model = File3dm.FromDoc(rhinoDoc);
                         break;
                         
                     case "3dm":
@@ -250,8 +261,6 @@ namespace SpinlioCompute.Services
                         sourceLoaded = model != null;
                         break;
                         
-                    // Add more source formats as needed
-                    
                     default:
                         throw new NotSupportedException($"Source format {sourceFormat} is not supported");
                 }
@@ -267,17 +276,31 @@ namespace SpinlioCompute.Services
                 switch (targetFormat)
                 {
                     case "obj":
-                        // In Rhino 8, the Write method has different parameters
+                        // Create write options
                         var fileWriteOptions = new FileWriteOptions();
                         var objWriteOptions = new FileObjWriteOptions(fileWriteOptions);
                         
-                        // Correct API for Rhino 8
-                        conversionSuccess = FileObj.Write(outputPath, model, objWriteOptions);
+                        // Convert File3dm to RhinoDoc for writing
+                        using (var docModel = RhinoDoc.CreateHeadless(null))
+                        {
+                            // Import model into RhinoDoc
+                            model.ToDoc(docModel);
+                            
+                            // Write using RhinoDoc
+                            conversionSuccess = FileObj.Write(outputPath, docModel, objWriteOptions);
+                        }
                         break;
                         
                     case "stl":
-                        // For STL files in Rhino 8
-                        conversionSuccess = FileStl.Write(outputPath, model, new FileStlWriteOptions());
+                        // For STL files
+                        using (var docModel = RhinoDoc.CreateHeadless(null))
+                        {
+                            // Import model into RhinoDoc
+                            model.ToDoc(docModel);
+                            
+                            // Write using RhinoDoc
+                            conversionSuccess = FileStl.Write(outputPath, docModel, new FileStlWriteOptions());
+                        }
                         break;
                         
                     case "3dm":
@@ -286,12 +309,8 @@ namespace SpinlioCompute.Services
                         
                     case "gltf":
                     case "glb":
-                        // Note: This is a placeholder - actual implementation depends on available Rhino libraries
-                        // For GLB/GLTF, you might need to use a different approach or library
                         throw new NotImplementedException($"Conversion to {targetFormat} is not implemented yet");
                         
-                    // Add more target formats as needed
-                    
                     default:
                         throw new NotSupportedException($"Target format {targetFormat} is not supported");
                 }
