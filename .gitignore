@@ -1,0 +1,9 @@
+# Development settings and secrets
+**/appsettings.Development.json
+**/appsettings.*.json
+.env
+*.user
+[Bb]in/
+[Oo]bj/
+.vs/
+.vscode/
