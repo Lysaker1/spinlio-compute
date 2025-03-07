@@ -83,6 +83,12 @@ app.UseCors(); // Enable CORS
 app.UseAuthorization(); // Enable authorization
 app.MapControllers(); // Map controller endpoints
 
+app.MapPost("/convert", async (HttpContext context, [FromBody] ConversionRequest request) => {
+    // Forward to the controller
+    var controller = context.RequestServices.GetRequiredService<ConvertController>();
+    return await controller.InitiateConversion(request);
+});
+
 // 🚀 Ensure services are initialized at startup
 app.Services.GetRequiredService<ModelConversionService>();
 app.Services.GetRequiredService<GrasshopperService>();

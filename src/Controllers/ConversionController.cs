@@ -18,7 +18,7 @@ namespace SpinlioCompute.Controllers
      * a job ID that can be used to check the status later.
      */
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class ConvertController : ControllerBase
     {
         /// <summary>Service for handling model conversion operations</summary>

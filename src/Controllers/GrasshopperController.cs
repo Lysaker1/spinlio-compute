@@ -19,7 +19,7 @@ namespace SpinlioCompute.Controllers
      * creation of parametric 3D models that can be manipulated via inputs.
      */
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     public class GrasshopperController : ControllerBase
     {
         /// <summary>Logger for recording controller activities</summary>
